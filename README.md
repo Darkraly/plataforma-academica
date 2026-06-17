@@ -1,10 +1,10 @@
-# 🎓 Plataforma Acadêmica
+#  Plataforma Acadêmica
 
 > Plataforma escalável de gerenciamento acadêmico baseada em microsserviços, com práticas DevOps, CI/CD completo e observabilidade.
 
 [![CI Pipeline](https://github.com/SEU_USUARIO/plataforma-academica/actions/workflows/ci.yml/badge.svg)](https://github.com/SEU_USUARIO/plataforma-academica/actions/workflows/ci.yml)
 
-## 📋 Sobre o Projeto
+##  Sobre o Projeto
 
 Projeto Final de Semestre — **Engenharia da Computação**
 
@@ -16,7 +16,7 @@ Uma startup deseja construir uma plataforma escalável de **gerenciamento acadê
 - **Gestão Acadêmica**: CRUD de disciplinas, turmas e matrículas
 - **Atividades**: Criação de atividades, submissão de entregas e atribuição de notas
 
-## 🏗️ Arquitetura
+##  Arquitetura
 
 ```
 ┌─────────────────┐
@@ -48,7 +48,7 @@ Uma startup deseja construir uma plataforma escalável de **gerenciamento acadê
 | **assignment-service** | 3003 | Atividades, entregas, notas |
 | **API Gateway (Nginx)** | 80 | Roteamento, CORS, rate limiting |
 
-## 🛠️ Stack Tecnológica
+##  Stack Tecnológica
 
 | Componente | Tecnologia |
 |------------|------------|
@@ -66,7 +66,7 @@ Uma startup deseja construir uma plataforma escalável de **gerenciamento acadê
 | Testes | Jest + Supertest |
 | Lint | ESLint + Prettier |
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Pré-requisitos
 
@@ -103,7 +103,7 @@ docker compose ps
 | `GET /api/assignments/health` | Health check do assignment-service |
 | `GET /api/assignments/atividades` | Listar atividades |
 
-## 📁 Estrutura do Projeto
+##  Estrutura do Projeto
 
 ```
 plataforma-academica/
@@ -119,14 +119,14 @@ plataforma-academica/
 └── README.md
 ```
 
-## 📖 Documentação
+##  Documentação
 
 - [Arquitetura do Sistema](docs/ARCHITECTURE.md)
 - [Modelo Conceitual](docs/CONCEPTUAL_MODEL.md)
 - [Documentação da API](docs/API.md)
 - [Instruções de Deploy](docs/DEPLOY.md)
 
-## 🔄 Git Flow
+##  Git Flow
 
 Este projeto utiliza **Git Flow** como estratégia de branches:
 
@@ -147,13 +147,13 @@ docs(architecture): update system diagram
 chore(docker): optimize Dockerfile layers
 ```
 
-## 👥 Equipe
+##  Equipe
 
 | Nome | Papel |
 |------|-------|
 | [Membro 1] | Desenvolvedor |
 | [Membro 2] | Desenvolvedor |
 
-## 📄 Licença
+##  Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
