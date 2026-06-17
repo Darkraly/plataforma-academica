@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const logger = require('../config/logger');
 
 /**
  * Middleware de autenticação JWT para o academic-service
