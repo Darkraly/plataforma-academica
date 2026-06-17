@@ -1,4 +1,4 @@
-# 📊 Modelo Conceitual
+#  Modelo Conceitual
 
 ## Diagrama ER (Entidade-Relacionamento)
 
