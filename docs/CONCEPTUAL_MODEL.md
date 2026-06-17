@@ -1,59 +1,67 @@
-#  Modelo Conceitual
+# Modelo Conceitual
 
-## Diagrama ER (Entidade-Relacionamento)
+## Diagrama de Classes (Modelo Conceitual)
 
-```
-┌──────────────────┐
-│     USUARIO      │
-├──────────────────┤          ┌──────────────────┐
-│ PK id            │          │     ALUNO        │
-│    nome          │          ├──────────────────┤
-│    email (unique)│──────┬──►│ PK id            │
-│    senha         │      │   │ FK usuario_id    │
-│    tipo          │      │   │    matricula     │
-│    created_at    │      │   │    curso         │
-│    updated_at    │      │   └───────┬──────────┘
-└──────────────────┘      │           │
-                          │           │ 1:N
-                          │   ┌───────▼──────────┐
-                          │   │    MATRICULA     │
-                          │   ├──────────────────┤
-                          │   │ PK id            │
-                          │   │ FK aluno_id      │
-                          │   │ FK turma_id      │
-                          │   │    data          │
-                          │   │    status        │
-                          │   └───────┬──────────┘
-                          │           │ N:1
-                          │   ┌───────▼──────────┐
-┌──────────────────┐      │   │      TURMA       │
-│    PROFESSOR     │      │   ├──────────────────┤
-├──────────────────┤      │   │ PK id            │
-│ PK id            │◄─────┘   │ FK disciplina_id │
-│ FK usuario_id    │──────────►│ FK professor_id  │
-│    siape         │  1:N     │    semestre      │
-│    departamento  │          │    horario       │
-└──────────────────┘          └───────┬──────────┘
-                                      │ 1:N
-┌──────────────────┐          ┌───────▼──────────┐
-│   DISCIPLINA     │          │    ATIVIDADE     │
-├──────────────────┤          ├──────────────────┤
-│ PK id            │──────────►│ PK id            │
-│    nome          │   1:N    │ FK turma_id      │
-│    codigo(unique)│          │    titulo        │
-│    carga_horaria │          │    descricao     │
-└──────────────────┘          │    prazo         │
-                              └───────┬──────────┘
-                                      │ 1:N
-                              ┌───────▼──────────┐
-                              │     ENTREGA      │
-                              ├──────────────────┤
-                              │ PK id            │
-                              │ FK atividade_id  │
-                              │ FK aluno_id      │
-                              │    data_entrega  │
-                              │    nota          │
-                              └──────────────────┘
+```mermaid
+classDiagram
+  class Usuario {
+    +id
+    +nome
+    +email
+    +senha
+    +tipo
+  }
+  
+  class Professor {
+    +siape
+    +departamento
+  }
+  
+  class Aluno {
+    +matricula
+    +curso
+  }
+  
+  class Disciplina {
+    +id
+    +nome
+    +codigo
+    +cargaHoraria
+  }
+  
+  class Turma {
+    +id
+    +semestre
+    +horario
+  }
+  
+  class Atividade {
+    +id
+    +titulo
+    +descricao
+    +prazo
+  }
+  
+  class Matricula {
+    +data
+    +status
+  }
+  
+  class Entrega {
+    +dataEntrega
+    +nota
+  }
+
+  Usuario <|-- Professor
+  Usuario <|-- Aluno
+  
+  Professor "1" --> "*" Disciplina : ministra
+  Disciplina "1" --> "*" Turma
+  Turma "1" --> "*" Matricula
+  Aluno "1" --> "*" Matricula
+  Turma "1" --> "*" Atividade
+  Atividade "1" --> "*" Entrega
+  Aluno "1" --> "*" Entrega
 ```
 
 ## Entidades
