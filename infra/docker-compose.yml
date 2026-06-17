@@ -1,0 +1,190 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # API Gateway (Nginx)
+  # ==========================================
+  gateway:
+    build:
+      context: ../gateway
+      dockerfile: Dockerfile
+    container_name: plataforma-gateway
+    ports:
+      - "80:80"
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      academic-service:
+        condition: service_healthy
+      assignment-service:
+        condition: service_healthy
+    networks:
+      - plataforma-network
+    restart: unless-stopped
+
+  # ==========================================
+  # Auth Service
+  # ==========================================
+  auth-service:
+    build:
+      context: ../services/auth-service
+      dockerfile: Dockerfile
+    container_name: plataforma-auth-service
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=3001
+      - DB_HOST=auth-db
+      - DB_PORT=5432
+      - DB_NAME=${AUTH_DB_NAME:-auth_db}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_change_in_production}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-24h}
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - plataforma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  auth-db:
+    image: postgres:16-alpine
+    container_name: plataforma-auth-db
+    environment:
+      - POSTGRES_DB=${AUTH_DB_NAME:-auth_db}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+    networks:
+      - plataforma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${AUTH_DB_NAME:-auth_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ==========================================
+  # Academic Service
+  # ==========================================
+  academic-service:
+    build:
+      context: ../services/academic-service
+      dockerfile: Dockerfile
+    container_name: plataforma-academic-service
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=3002
+      - DB_HOST=academic-db
+      - DB_PORT=5432
+      - DB_NAME=${ACADEMIC_DB_NAME:-academic_db}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_change_in_production}
+    depends_on:
+      academic-db:
+        condition: service_healthy
+    networks:
+      - plataforma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  academic-db:
+    image: postgres:16-alpine
+    container_name: plataforma-academic-db
+    environment:
+      - POSTGRES_DB=${ACADEMIC_DB_NAME:-academic_db}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - academic-db-data:/var/lib/postgresql/data
+    networks:
+      - plataforma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${ACADEMIC_DB_NAME:-academic_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ==========================================
+  # Assignment Service
+  # ==========================================
+  assignment-service:
+    build:
+      context: ../services/assignment-service
+      dockerfile: Dockerfile
+    container_name: plataforma-assignment-service
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=3003
+      - DB_HOST=assignment-db
+      - DB_PORT=5432
+      - DB_NAME=${ASSIGNMENT_DB_NAME:-assignment_db}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - JWT_SECRET=${JWT_SECRET:-super_secret_jwt_key_change_in_production}
+    depends_on:
+      assignment-db:
+        condition: service_healthy
+    networks:
+      - plataforma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  assignment-db:
+    image: postgres:16-alpine
+    container_name: plataforma-assignment-db
+    environment:
+      - POSTGRES_DB=${ASSIGNMENT_DB_NAME:-assignment_db}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+    volumes:
+      - assignment-db-data:/var/lib/postgresql/data
+    networks:
+      - plataforma-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${ASSIGNMENT_DB_NAME:-assignment_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+# ==========================================
+# Volumes persistentes
+# ==========================================
+volumes:
+  auth-db-data:
+    driver: local
+  academic-db-data:
+    driver: local
+  assignment-db-data:
+    driver: local
+
+# ==========================================
+# Rede interna
+# ==========================================
+networks:
+  plataforma-network:
+    driver: bridge
+    name: plataforma-network

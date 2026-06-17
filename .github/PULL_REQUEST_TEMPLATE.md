@@ -4,12 +4,12 @@ Descreva as mudanças realizadas neste PR de forma clara e concisa.
 
 ## Tipo de Mudança
 
-- [ ] 🐛 Bug fix (correção que não quebra funcionalidade existente)
-- [ ] ✨ Nova feature (mudança que adiciona funcionalidade)
-- [ ] 💥 Breaking change (correção ou feature que causa mudanças em funcionalidade existente)
-- [ ] 📝 Documentação (mudanças apenas em documentação)
-- [ ] 🔧 Chore (configs, CI/CD, docker, etc.)
-- [ ] ♻️ Refactoring (sem mudança funcional)
+- [ ]  Bug fix (correção que não quebra funcionalidade existente)
+- [ ]  Nova feature (mudança que adiciona funcionalidade)
+- [ ]  Breaking change (correção ou feature que causa mudanças em funcionalidade existente)
+- [ ]  Documentação (mudanças apenas em documentação)
+- [ ]  Chore (configs, CI/CD, docker, etc.)
+- [ ]  Refactoring (sem mudança funcional)
 
 ## Issue Relacionada
 
