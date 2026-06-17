@@ -1,5 +1,6 @@
 const { Matricula, Turma, Disciplina } = require('../models');
 const logger = require('../config/logger');
+const { authClient, getAuthHeaders } = require('../utils/apiClient');
 
 const enroll = async (req, res, next) => {
   try {
@@ -17,6 +18,12 @@ const enroll = async (req, res, next) => {
     });
     if (existing) {
       return res.status(409).json({ success: false, message: 'Aluno já está matriculado nesta turma' });
+    }
+
+    // Validar se aluno_id existe e tem tipo 'aluno'
+    const response = await authClient.get(`/users/${aluno_id}`, { headers: getAuthHeaders(req) });
+    if (response.data.data.tipo !== 'aluno') {
+      return res.status(400).json({ success: false, message: 'Usuário informado não é um aluno' });
     }
 
     const matricula = await Matricula.create({

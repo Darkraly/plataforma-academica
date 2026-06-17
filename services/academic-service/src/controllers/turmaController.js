@@ -1,5 +1,6 @@
 const { Turma, Disciplina } = require('../models');
 const logger = require('../config/logger');
+const { authClient, getAuthHeaders } = require('../utils/apiClient');
 
 const getAll = async (req, res, next) => {
   try {
@@ -40,6 +41,14 @@ const create = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Disciplina não encontrada' });
     }
 
+    // Validar se professor_id existe e tem tipo 'professor'
+    if (professor_id) {
+      const response = await authClient.get(`/users/${professor_id}`, { headers: getAuthHeaders(req) });
+      if (response.data.data.tipo !== 'professor') {
+        return res.status(400).json({ success: false, message: 'Usuário informado não é um professor' });
+      }
+    }
+
     const turma = await Turma.create({ disciplina_id, professor_id, semestre, horario });
     logger.info(`Turma criada: ${disciplina.nome} - ${semestre}`);
     res.status(201).json({ success: true, message: 'Turma criada com sucesso', data: turma });
@@ -55,6 +64,15 @@ const update = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Turma não encontrada' });
     }
     const { disciplina_id, professor_id, semestre, horario } = req.body;
+
+    // Validar se professor_id existe e tem tipo 'professor'
+    if (professor_id) {
+      const response = await authClient.get(`/users/${professor_id}`, { headers: getAuthHeaders(req) });
+      if (response.data.data.tipo !== 'professor') {
+        return res.status(400).json({ success: false, message: 'Usuário informado não é um professor' });
+      }
+    }
+
     await turma.update({ disciplina_id, professor_id, semestre, horario });
     logger.info(`Turma atualizada: ID ${turma.id}`);
     res.status(200).json({ success: true, message: 'Turma atualizada com sucesso', data: turma });

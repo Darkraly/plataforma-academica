@@ -1,5 +1,6 @@
 const { Entrega, Atividade } = require('../models');
 const logger = require('../config/logger');
+const { authClient, getAuthHeaders } = require('../utils/apiClient');
 
 const submit = async (req, res, next) => {
   try {
@@ -7,6 +8,12 @@ const submit = async (req, res, next) => {
 
     const atividade = await Atividade.findByPk(atividade_id);
     if (!atividade) return res.status(404).json({ success: false, message: 'Atividade não encontrada' });
+
+    // Verificar se o aluno existe no auth-service
+    const response = await authClient.get(`/users/${aluno_id}`, { headers: getAuthHeaders(req) });
+    if (response.data.data.tipo !== 'aluno') {
+      return res.status(400).json({ success: false, message: 'Usuário informado não é um aluno' });
+    }
 
     // Verificar se já entregou
     const existing = await Entrega.findOne({ where: { atividade_id, aluno_id } });

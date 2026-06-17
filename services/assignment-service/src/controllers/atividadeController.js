@@ -1,5 +1,6 @@
 const { Atividade } = require('../models');
 const logger = require('../config/logger');
+const { academicClient, getAuthHeaders } = require('../utils/apiClient');
 
 const getAll = async (req, res, next) => {
   try {
@@ -21,6 +22,17 @@ const getById = async (req, res, next) => {
 const create = async (req, res, next) => {
   try {
     const { turma_id, titulo, descricao, prazo } = req.body;
+
+    // Validar se turma_id existe
+    try {
+      await academicClient.get(`/turmas/${turma_id}`, { headers: getAuthHeaders(req) });
+    } catch (err) {
+      if (err.response && err.response.status === 404) {
+        return res.status(404).json({ success: false, message: 'Turma não encontrada' });
+      }
+      throw err;
+    }
+
     const atividade = await Atividade.create({ turma_id, titulo, descricao, prazo });
     logger.info(`Atividade criada: ${titulo} (Turma: ${turma_id})`);
     res.status(201).json({ success: true, message: 'Atividade criada com sucesso', data: atividade });
