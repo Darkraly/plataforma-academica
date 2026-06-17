@@ -241,7 +241,7 @@ describe('Auth Service - Endpoints', () => {
     it('deve retornar perfil com token válido', async () => {
       const token = jwt.sign(
         { id: 1, email: 'joao@email.com', tipo: 'aluno' },
-        process.env.JWT_SECRET || 'test_secret_key',
+        process.env.JWT_SECRET || 'default_secret',
         { expiresIn: '1h' }
       );
 
