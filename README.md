@@ -151,8 +151,7 @@ chore(docker): optimize Dockerfile layers
 
 | Nome | Papel |
 |------|-------|
-| [Membro 1] | Desenvolvedor |
-| [Membro 2] | Desenvolvedor |
+| José Lidio Menezes da Cruz | Desenvolvedor |
 
 ##  Licença
 
