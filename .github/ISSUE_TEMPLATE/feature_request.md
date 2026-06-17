@@ -1,5 +1,5 @@
 ---
-name: ✨ Feature Request
+name:  Feature Request
 about: Sugerir uma nova funcionalidade para o projeto
 title: "[FEATURE] "
 labels: feature
