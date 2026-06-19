@@ -1,4 +1,4 @@
-#  API Gateway (Nginx)
+# API Gateway (Nginx)
 
 Reverse proxy que roteia requisições para os microsserviços corretos.
 
