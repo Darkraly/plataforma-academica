@@ -13,6 +13,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);
 
+// Prometheus Metrics
+const promBundle = require('express-prom-bundle');
+const promClient = require('prom-client');
+promClient.collectDefaultMetrics();
+const metricsMiddleware = promBundle({includeMethod: true, includePath: true, includeStatusCode: true});
+app.use(metricsMiddleware);
+
 // Rotas
 app.use('/', healthRoutes);
 app.use('/api/auth', authRoutes);

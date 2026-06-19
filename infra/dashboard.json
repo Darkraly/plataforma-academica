@@ -1,0 +1,74 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "custom-node-dash",
+    "title": "My Awesome NodeJS Dashboard",
+    "tags": [ "templated" ],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "5s",
+    "panels": [
+      {
+        "type": "timeseries",
+        "title": "CPU Usage (seconds per second)",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[1m])",
+            "legendFormat": "{{instance}}",
+            "refId": "A"
+          }
+        ],
+        "xaxis": { "mode": "time" }
+      },
+      {
+        "type": "timeseries",
+        "title": "Resident Memory Usage",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "legendFormat": "{{instance}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "bytes"
+          }
+        }
+      },
+      {
+        "type": "timeseries",
+        "title": "HTTP Requests Rate",
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+        "targets": [
+          {
+            "expr": "sum by(status_code, instance) (rate(http_request_duration_seconds_count[1m]))",
+            "legendFormat": "{{instance}} - {{status_code}}",
+            "refId": "A"
+          }
+        ]
+      },
+      {
+        "type": "timeseries",
+        "title": "Event Loop Lag",
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+        "targets": [
+          {
+            "expr": "nodejs_eventloop_lag_seconds",
+            "legendFormat": "{{instance}}",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "s"
+          }
+        }
+      }
+    ]
+  },
+  "overwrite": true
+}
