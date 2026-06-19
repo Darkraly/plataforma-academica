@@ -77,7 +77,7 @@ Uma startup deseja construir uma plataforma escalável de **gerenciamento acadê
 
 ```bash
 # 1. Clonar o repositório
-git clone https://github.com/SEU_USUARIO/plataforma-academica.git
+git clone https://github.com/Darkraly/plataforma-academica.git
 cd plataforma-academica
 
 # 2. Copiar variáveis de ambiente
