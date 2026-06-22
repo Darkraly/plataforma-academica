@@ -1,10 +1,24 @@
-const { Turma, Disciplina } = require('../models');
+const { Turma, Disciplina, Matricula } = require('../models');
 const logger = require('../config/logger');
 const { authClient, getAuthHeaders } = require('../utils/apiClient');
 
 const getAll = async (req, res, next) => {
   try {
     const turmas = await Turma.findAll({
+      include: [{ model: Disciplina, as: 'disciplina' }],
+      order: [['semestre', 'DESC']],
+    });
+    res.status(200).json({ success: true, data: turmas });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getByProfessor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const turmas = await Turma.findAll({
+      where: { professor_id: id },
       include: [{ model: Disciplina, as: 'disciplina' }],
       order: [['semestre', 'DESC']],
     });
@@ -95,4 +109,38 @@ const remove = async (req, res, next) => {
   }
 };
 
-module.exports = { getAll, getById, create, update, remove };
+const updateDiario = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { diario } = req.body; // array of { matricula_id, nota_final, faltas }
+
+    const turma = await Turma.findByPk(id);
+    if (!turma) {
+      return res.status(404).json({ success: false, message: 'Turma não encontrada' });
+    }
+
+    // Verifica permissão adicional (se o professor atual é o dono da turma)
+    // assumindo que req.user já passou pelo middleware de autenticação
+    if (req.user.tipo === 'professor' && turma.professor_id !== req.user.id) {
+       return res.status(403).json({ success: false, message: 'Você não é o professor desta turma' });
+    }
+
+    if (!Array.isArray(diario)) {
+      return res.status(400).json({ success: false, message: 'Formato de diário inválido' });
+    }
+
+    for (const d of diario) {
+      await Matricula.update(
+        { nota_final: d.nota_final, faltas: d.faltas },
+        { where: { id: d.matricula_id, turma_id: id } }
+      );
+    }
+
+    logger.info(`Diário da turma ${id} atualizado.`);
+    res.status(200).json({ success: true, message: 'Diário atualizado com sucesso' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAll, getById, create, update, remove, getByProfessor, updateDiario };

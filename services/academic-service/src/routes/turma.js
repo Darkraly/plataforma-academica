@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const { validate } = require('../middlewares/validate');
-const { authenticate } = require('../middlewares/authMiddleware');
+const { authenticate, authorize, requirePermission } = require('../middlewares/authMiddleware');
 const controller = require('../controllers/turmaController');
 
 router.get('/', authenticate, controller.getAll);
+router.get('/professor/:id', authenticate, controller.getByProfessor);
 router.get('/:id', authenticate, controller.getById);
 
 router.post('/',
   authenticate,
+  requirePermission('CRIAR_TURMA'),
   [
     body('disciplina_id').isInt().withMessage('ID da disciplina é obrigatório'),
     body('professor_id').isInt().withMessage('ID do professor é obrigatório'),
@@ -22,6 +24,7 @@ router.post('/',
 
 router.put('/:id',
   authenticate,
+  requirePermission('EDITAR_TURMA'),
   [
     body('disciplina_id').optional().isInt().withMessage('ID da disciplina inválido'),
     body('professor_id').optional().isInt().withMessage('ID do professor inválido'),
@@ -32,6 +35,7 @@ router.put('/:id',
   controller.update
 );
 
-router.delete('/:id', authenticate, controller.remove);
+router.put('/:id/diario', authenticate, controller.updateDiario);
+router.delete('/:id', authenticate, requirePermission('DELETAR_TURMA'), controller.remove);
 
 module.exports = router;

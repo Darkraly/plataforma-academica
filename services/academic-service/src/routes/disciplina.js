@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const { validate } = require('../middlewares/validate');
-const { authenticate } = require('../middlewares/authMiddleware');
+const { authenticate, authorize, requirePermission } = require('../middlewares/authMiddleware');
 const controller = require('../controllers/disciplinaController');
 
 router.get('/', authenticate, controller.getAll);
@@ -10,6 +10,7 @@ router.get('/:id', authenticate, controller.getById);
 
 router.post('/',
   authenticate,
+  requirePermission('CRIAR_DISCIPLINA'),
   [
     body('nome').trim().notEmpty().withMessage('Nome é obrigatório'),
     body('codigo').trim().notEmpty().withMessage('Código é obrigatório'),
@@ -21,6 +22,7 @@ router.post('/',
 
 router.put('/:id',
   authenticate,
+  requirePermission('EDITAR_DISCIPLINA'),
   [
     body('nome').optional().trim().notEmpty().withMessage('Nome não pode ser vazio'),
     body('codigo').optional().trim().notEmpty().withMessage('Código não pode ser vazio'),
@@ -30,6 +32,6 @@ router.put('/:id',
   controller.update
 );
 
-router.delete('/:id', authenticate, controller.remove);
+router.delete('/:id', authenticate, requirePermission('DELETAR_DISCIPLINA'), controller.remove);
 
 module.exports = router;

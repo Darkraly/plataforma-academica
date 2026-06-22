@@ -29,6 +29,7 @@ const authenticate = (req, res, next) => {
       id: decoded.id,
       email: decoded.email,
       tipo: decoded.tipo,
+      permissoes: decoded.permissoes || [],
     };
 
     next();
@@ -59,23 +60,31 @@ const authenticate = (req, res, next) => {
  */
 const authorize = (...tipos) => {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Não autenticado',
-      });
+    if (!req.user || !tipos.includes(req.user.tipo)) {
+      return res.status(403).json({ success: false, message: 'Acesso negado' });
     }
-
-    if (!tipos.includes(req.user.tipo)) {
-      logger.warn(`Acesso negado para ${req.user.email} (${req.user.tipo})`);
-      return res.status(403).json({
-        success: false,
-        message: 'Você não tem permissão para acessar este recurso',
-      });
-    }
-
     next();
   };
 };
 
-module.exports = { authenticate, authorize };
+/**
+ * Middleware para checar permissão granular
+ * @param {string} action - Ação requerida (ex: 'CRIAR_TURMA')
+ */
+const requirePermission = (action) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Não autenticado' });
+    }
+    
+    // Admin master tem acesso total, ou o usuário tem a permissão específica
+    const hasPermission = req.user.tipo === 'admin' || req.user.permissoes.includes(action) || req.user.permissoes.includes('ADMIN_ALL');
+    
+    if (!hasPermission) {
+      return res.status(403).json({ success: false, message: `Permissão negada. Requer: ${action}` });
+    }
+    next();
+  };
+};
+
+module.exports = { authenticate, authorize, requirePermission };

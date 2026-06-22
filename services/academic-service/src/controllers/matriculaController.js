@@ -82,4 +82,18 @@ const updateStatus = async (req, res, next) => {
   }
 };
 
-module.exports = { enroll, getByAluno, getByTurma, updateStatus };
+const remove = async (req, res, next) => {
+  try {
+    const matricula = await Matricula.findByPk(req.params.id);
+    if (!matricula) {
+      return res.status(404).json({ success: false, message: 'Matrícula não encontrada' });
+    }
+    await matricula.destroy();
+    logger.info(`Matrícula removida: ID ${req.params.id}`);
+    res.status(200).json({ success: true, message: 'Aluno removido da turma com sucesso' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { enroll, getByAluno, getByTurma, updateStatus, remove };

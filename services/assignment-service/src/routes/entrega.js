@@ -2,10 +2,10 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const { validate } = require('../middlewares/validate');
-const { authenticate } = require('../middlewares/authMiddleware');
+const { authenticate, authorize, requirePermission } = require('../middlewares/authMiddleware');
 const controller = require('../controllers/entregaController');
 
-router.post('/', authenticate,
+router.post('/', authenticate, requirePermission('SUBMETER_ENTREGA'),
   [
     body('atividade_id').isInt().withMessage('ID da atividade é obrigatório'),
     body('aluno_id').isInt().withMessage('ID do aluno é obrigatório'),
@@ -13,8 +13,8 @@ router.post('/', authenticate,
   validate, controller.submit
 );
 router.get('/aluno/:alunoId', authenticate, controller.getByAluno);
-router.get('/atividade/:atividadeId', authenticate, controller.getByAtividade);
-router.put('/:id/nota', authenticate,
+router.get('/atividade/:atividadeId', authenticate, requirePermission('AVALIAR_ENTREGA'), controller.getByAtividade);
+router.put('/:id/nota', authenticate, requirePermission('AVALIAR_ENTREGA'),
   [ body('nota').isFloat({ min: 0, max: 10 }).withMessage('Nota deve ser entre 0 e 10') ],
   validate, controller.grade
 );

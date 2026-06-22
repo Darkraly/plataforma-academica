@@ -1,0 +1,29 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevents overflow */
+  transition: padding-left 0.3s ease;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  background-color: var(--background-color);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* On larger screens, the sidebar pushes the content */
+@media (min-width: 1024px) {
+  .main-wrapper.with-sidebar {
+    padding-left: 0; /* Changed since sidebar is fixed and overlay is used */
+  }
+}

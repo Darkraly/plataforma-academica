@@ -2,6 +2,18 @@ version: '3.8'
 
 services:
   # ==========================================
+  # Frontend Application
+  # ==========================================
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: plataforma-frontend
+    networks:
+      - plataforma-network
+    restart: unless-stopped
+
+  # ==========================================
   # API Gateway (Nginx)
   # ==========================================
   gateway:
@@ -12,6 +24,8 @@ services:
     ports:
       - "80:80"
     depends_on:
+      frontend:
+        condition: service_started
       auth-service:
         condition: service_healthy
       academic-service:

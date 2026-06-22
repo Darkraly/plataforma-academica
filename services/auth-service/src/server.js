@@ -15,6 +15,23 @@ async function startServer() {
     await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
     logger.info('✅ Modelos sincronizados com o banco de dados');
 
+    // Seed: Criar Admin Inicial se não existir
+    const bcrypt = require('bcryptjs');
+    const { User } = require('./models');
+    const adminEmail = 'admin@plataforma.com';
+    const existingAdmin = await User.findOne({ where: { email: adminEmail } });
+    if (!existingAdmin) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('admin123', salt);
+      await User.create({
+        nome: 'Administrador Principal',
+        email: adminEmail,
+        senha: hashedPassword,
+        tipo: 'admin'
+      });
+      logger.info('✅ Conta de Administrador inicial criada: ' + adminEmail);
+    }
+
     // Iniciar servidor
     app.listen(PORT, () => {
       logger.info(`🚀 Auth Service rodando na porta ${PORT}`);

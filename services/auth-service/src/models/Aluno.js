@@ -32,6 +32,18 @@ const Aluno = sequelize.define('Aluno', {
       notEmpty: { msg: 'Curso não pode ser vazio' },
     },
   },
+  nome_pai: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  nome_mae: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  contato_responsaveis: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
 }, {
   tableName: 'alunos',
   timestamps: true,

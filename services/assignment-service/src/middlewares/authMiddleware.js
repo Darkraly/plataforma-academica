@@ -8,7 +8,7 @@ const authenticate = (req, res, next) => {
     }
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret');
-    req.user = { id: decoded.id, email: decoded.email, tipo: decoded.tipo };
+    req.user = { id: decoded.id, email: decoded.email, tipo: decoded.tipo, permissoes: decoded.permissoes || [] };
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') return res.status(401).json({ success: false, message: 'Token expirado' });
@@ -22,4 +22,11 @@ const authorize = (...tipos) => (req, res, next) => {
   next();
 };
 
-module.exports = { authenticate, authorize };
+const requirePermission = (action) => (req, res, next) => {
+  if (!req.user) return res.status(401).json({ success: false, message: 'Não autenticado' });
+  const hasPermission = req.user.tipo === 'admin' || req.user.permissoes.includes(action) || req.user.permissoes.includes('ADMIN_ALL');
+  if (!hasPermission) return res.status(403).json({ success: false, message: `Permissão negada. Requer: ${action}` });
+  next();
+};
+
+module.exports = { authenticate, authorize, requirePermission };

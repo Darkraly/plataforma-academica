@@ -21,6 +21,7 @@ const authenticate = (req, res, next) => {
       id: decoded.id,
       email: decoded.email,
       tipo: decoded.tipo,
+      permissoes: decoded.permissoes || [],
     };
 
     next();
@@ -44,4 +45,24 @@ const authorize = (...tipos) => {
   };
 };
 
-module.exports = { authenticate, authorize };
+const requirePermission = (actionOrActions) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: 'Não autenticado' });
+    }
+    
+    const actions = Array.isArray(actionOrActions) ? actionOrActions : [actionOrActions];
+    const userPerms = req.user.permissoes || [];
+    
+    const hasPermission = req.user.tipo === 'admin' || 
+                          userPerms.includes('ADMIN_ALL') || 
+                          actions.some(a => userPerms.includes(a));
+    
+    if (!hasPermission) {
+      return res.status(403).json({ success: false, message: `Permissão negada. Requer uma das seguintes: ${actions.join(', ')}` });
+    }
+    next();
+  };
+};
+
+module.exports = { authenticate, authorize, requirePermission };
