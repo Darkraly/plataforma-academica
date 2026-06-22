@@ -43,6 +43,59 @@ const User = sequelize.define('User', {
       },
     },
   },
+  permissoes: {
+    type: DataTypes.JSON,
+    allowNull: true,
+    defaultValue: [],
+  },
+  telefone: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+  },
+  endereco: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  email_pessoal: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    validate: {
+      isEmail: { msg: 'Email pessoal inválido' },
+    },
+  },
+  cpf: {
+    type: DataTypes.STRING(14),
+    allowNull: true,
+    unique: { msg: 'Este CPF já está cadastrado' },
+  },
+  rg: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+  },
+  sexo: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+  },
+  estado_civil: {
+    type: DataTypes.STRING(30),
+    allowNull: true,
+  },
+  data_nascimento: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+  },
+  tipo_sanguineo: {
+    type: DataTypes.STRING(5),
+    allowNull: true,
+  },
+  naturalidade: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  nacionalidade: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
 }, {
   tableName: 'users',
   timestamps: true,

@@ -31,6 +31,15 @@ const Matricula = sequelize.define('Matricula', {
     allowNull: false,
     defaultValue: 'ativa',
   },
+  nota_final: {
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: true,
+  },
+  faltas: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0,
+  },
 }, {
   tableName: 'matriculas',
   timestamps: true,

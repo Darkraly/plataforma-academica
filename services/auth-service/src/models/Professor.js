@@ -32,6 +32,7 @@ const Professor = sequelize.define('Professor', {
       notEmpty: { msg: 'Departamento não pode ser vazio' },
     },
   },
+
 }, {
   tableName: 'professores',
   timestamps: true,
